@@ -1,0 +1,20 @@
+function Snackbar() {
+  const [isActive, setIsActive] = React.useState(null);
+  const [message, setMessage] = React.useState(null);
+
+  React.useEffect(()=>{
+    window.eventBus.on("snackbar", (data) => {
+      setMessage(data.message);
+      setIsActive(data.message);
+      setTimeout(()=>{
+        setIsActive(null);
+      },data.duration);
+    });
+  },[]);
+
+  return (
+  <div>
+   <div id="snackbar" className={isActive ? 'show' : ''}>{message}</div>
+  </div>
+  );
+}
