@@ -1,0 +1,78 @@
+<style>
+.ess{
+  position: relative;
+  display: inline-block;
+  margin-left: 13px;
+  font-size: 25px;
+  font-weight: 100;
+  top: 3px;
+}
+.beta{
+  position: relative;
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 12px;
+  top: 5px;
+  color: #8d8d8d;
+}
+.sidebar{
+  min-height: 100vh;
+}
+.sidebar .logo{
+  width: 117px;
+}
+.sidebar-wrapper{
+  max-width: 320px;
+  width: 320px;
+}
+.user{
+  font-size: 30px;
+  margin-right: 13px;
+}
+.sidebar .menu-icon{
+  width: 25px;
+}
+.leave-balance{
+  width: 200px;
+  display: inline-block;
+  margin-right: 20px;
+}
+.leave-balance .digit{
+  font-size: 35px;
+  font-weight: 100;
+}
+.profile-table th{
+  width: 200px;
+}
+.profile-pic.rounded{
+  width: 35px;
+  border-radius: 100px!important;
+  margin-right: 10px;
+}
+
+//snackbar starts here
+/* The snackbar - position it at the bottom and in the middle of the screen */
+#snackbar {
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: #333; /* Black background color */
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 4px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  z-index: 1; /* Add a z-index if needed */
+  left: 50%; /* Center the snackbar */
+  bottom: -30px; /* 30px from the bottom */
+  transition: all 0.5s;
+  opacity: 0;
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+  bottom: 30px;
+  opacity: 1;
+}
+
+//snackbar ends here
+</style>
