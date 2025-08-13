@@ -1,0 +1,86 @@
+function LeaveApplication({leaveApplicationIsVisible, closeLeaveApplication}) {
+  const modalRef = React.useRef(null);
+  const bootstrapModalRef = React.useRef(null);
+  const [loading, setLoading] = React.useState(false);
+  const [fromDate, setFromDate] = React.useState(null);
+
+  React.useEffect(()=>{
+    if(leaveApplicationIsVisible){
+      bootstrapModalRef.current = new bootstrap.Modal(modalRef.current, {backdrop: 'static', keyboard: false});
+      bootstrapModalRef.current.show();
+    }else if(bootstrapModalRef.current && !leaveApplicationIsVisible){
+      bootstrapModalRef.current.hide();
+    }
+  },[leaveApplicationIsVisible]);
+
+  const fromDateOnChange = (e) => {
+    setFromDate(e.target.value);
+  }
+
+  const onFormSubmit = (e) => {
+    setLoading(true);
+    const formEntries = new FormData(e.target).entries();
+    const json = Object.assign(...Array.from(formEntries, ([x,y]) => ({[x]:y})));
+    e.preventDefault();
+
+    console.log(json);
+    google.script.run.withSuccessHandler((data)=>{
+      setLoading(false);
+      closeLeaveApplication(true);
+    }).insertLeave(json);
+    
+  }
+
+  return (
+  <div ref={modalRef} className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div className="modal-dialog modal-lg">
+      <div className="modal-content">
+        <form onSubmit={onFormSubmit}>
+          <div className="modal-header">
+            <h5 className="modal-title" id="exampleModalLabel">Apply For Leave</h5>
+            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={closeLeaveApplication}></button>
+          </div>
+          <div className="modal-body">
+            <div className="row">
+              <div className="col-7">
+                <h6>Holiday Calendar</h6>
+                <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=2&bgcolor=%23ffffff&ctz=Asia%2FKolkata&showTitle=0&showPrint=0&showCalendars=0&src=Y19maGFoNXBnaDYxcTYxZTZsNXZzdG9udm9uc0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23EF6C00" width="100%" height="400" frameBorder="0" scrolling="no"></iframe>
+              </div>
+              <div className="col-5">
+                  <div className="mb-3">
+                    <label className="form-label">From Date</label>
+                    <input onChange={fromDateOnChange} required type="date" name="fromDate" className="form-control" id="fromDate" aria-describedby="emailHelp" />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">To Date</label>
+                    <input required type="date" name="toDate" min={fromDate} className="form-control" id="toDate" aria-describedby="emailHelp" />
+                  </div>
+                  <div className="mb-3">
+                    <select required className="form-select mb-3" name="leaveType" aria-label=".form-select-lg example">
+                      <option value="">Choose Leave Type</option>
+                      <option value="EL">Earned Leave</option>
+                      <option value="CL/SL">Caual/Sick Leave</option>
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <textarea required name="leaveReason" className="form-control" placeholder="Reason" rows="3"></textarea>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={closeLeaveApplication}>Close</button>
+            <button type="submit" disabled={loading} className="btn btn-primary">
+              {loading && <div className="spinner-border spinner-border-sm me-2" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>}
+              Apply
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  );
+}
+
