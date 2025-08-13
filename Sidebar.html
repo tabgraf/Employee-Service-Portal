@@ -1,0 +1,59 @@
+function Sidebar({activeTab, setActiveTab}) {
+  const changeTab = (e) => {
+    setActiveTab(e.currentTarget.getAttribute("name"));
+  }
+  const logout = () => {
+    window.eventBus.dispatch("snackbar", {
+      message: "Please logout from Google to get logged out from ESS.",
+      duration: 4000,
+    });
+  }
+  return (
+   <div className="d-flex flex-column flex-shrink-0 p-3 bg-light sidebar">
+    <div className="text-left">
+      <span className="ess">Employee Service Portal</span>
+      <span className="beta">V1.0 ALPHA</span>
+    </div>
+    <hr/>
+    <ul className="nav nav-pills flex-column mb-auto">
+      <li className="nav-item" name='leave' onClick={changeTab}>
+        <a href="#" className={`nav-link link-dark ${activeTab=='leave' ? 'active' : ''}`} aria-current="page">
+          <i className="menu-icon fa-solid fa-calendar-minus"></i> Leave
+        </a>
+      </li>
+      <li className="nav-item" name='payroll' onClick={changeTab}>
+        <a href="#" className={`nav-link link-dark ${activeTab=='payroll' ? 'active' : ''}`}>
+          <i className="menu-icon fa-solid fa-money-check-dollar"></i> Payroll
+        </a>
+      </li>
+      <li className="nav-item" name='assets' onClick={changeTab}>
+        <a href="#" className={`nav-link link-dark ${activeTab=='assets' ? 'active' : ''}`}>
+          <i className="menu-icon fa-solid fa-computer"></i> Assets
+        </a>
+      </li>
+    </ul>
+    <hr/>
+    <div className="dropdown">
+      <a href="#" className="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+        <span className="border border-dark rounded-circle d-inline-flex align-items-center justify-content-center me-1" style={{ width: "40px", height: "40px" }}>
+          <strong>
+            {window.directoryInfo.email.charAt(0).toUpperCase()}
+          </strong>
+        </span>
+        <strong>{window.directoryInfo.email}</strong>
+      </a>
+      <ul className="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+        <li name='profile' onClick={changeTab}>
+          <a className="dropdown-item" href="#"><i className="fa-solid fa-user"></i> My Profile</a>
+        </li>
+        <li><hr className="dropdown-divider"/></li>
+        <li onClick={logout}>
+          <a className="dropdown-item" href="#"><i className="fa-solid fa-right-from-bracket"></i> Sign out</a>
+        </li>
+      </ul>
+      <br/>
+      <div className="text-center text-secondary">© {new Date().getFullYear()} Tabgraf Technologies LLP. <br/>All Rights Reserved.</div>
+    </div>
+  </div>
+  );
+}
