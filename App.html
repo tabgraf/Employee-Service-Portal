@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <?!= HtmlService.createHtmlOutputFromFile('Head').getContent(); ?>
+  <body>
+    <div id="root">Loading...</div>
+    <?!= HtmlService.createHtmlOutputFromFile('Styles').getContent(); ?>
+    <script type="text/babel">
+      window.directoryInfo = {
+        "email": "<?!=Session.getActiveUser().getEmail()?>",
+      };
+
+      window.eventBus = {
+        on(event, callback) {
+          document.addEventListener(event, (e) => callback(e.detail));
+        },
+        dispatch(event, data) {
+          document.dispatchEvent(new CustomEvent(event, { detail: data }));
+        },
+        remove(event, callback) {
+          document.removeEventListener(event, callback);
+        },
+      };
+
+      <?!= importFile_('Snackbar'); ?>
+      <?!= importFile_('Sidebar'); ?>
+      <?!= importFile_('LeaveApplication'); ?>
+      <?!= importFile_('Leave'); ?>
+      <?!= importFile_('Payroll'); ?>
+      <?!= importFile_('Assets'); ?>
+      <?!= importFile_('Profile'); ?>
+      <?!= importFile_('Dashboard'); ?>
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(
+        <div>
+          <Snackbar/>
+          <Dashboard/>
+        </div>
+      );
+    </script>
+
+
+  </body>
+</html>
