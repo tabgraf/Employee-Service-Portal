@@ -1,0 +1,53 @@
+function Profile() {
+  const [profileInfo, setProfileInfo] = React.useState(null);
+
+  const arrayToMatrix = (array, columns) => Array(Math.ceil(array.length / columns)).fill('').reduce((acc, cur, index) => {
+    return [...acc, [...array].splice(index * columns, columns)]
+  }, []);
+
+  const objectToArray = (obj) => {
+    let arr = [];
+    let headerSequence = ['Emp No','Name','Email','DOB','Gender','Designation','Phone','Personal Email','DOJ','Bank Name','Bank Account No','PAN','Aadhaar','Passport','Fathers Name','Mothers Name','Work Location','Address'];
+    headerSequence.forEach((item)=>{
+      arr.push({key: item, val: obj[item]})
+    });
+    
+    return arrayToMatrix(arr, 2);
+  }
+
+  React.useEffect(()=>{
+    google.script.run.withSuccessHandler((response)=>{
+      console.log(response.data[0]);
+      setProfileInfo(response.data[0]);
+    }).getProfileInfo();
+  },[]);
+
+  return (
+  <div className="mt-3">
+    <h3>My Profile</h3>
+    {profileInfo && <img className="mt-3 rounded" src={window.directoryInfo.profilePic} /> }
+    <table className="table mt-3 profile-table">
+      <tbody>
+        {profileInfo && <React.Fragment>
+          {objectToArray(profileInfo).map((item, index)=><tr key={index}>
+            <th>{item[0].key}:</th>
+            <td>{item[0].val}</td>
+            <th>{item[1].key}:</th>
+            <td>{item[1].val}</td>
+          </tr>)}
+          </React.Fragment>
+        }
+        {!profileInfo && 
+          <tr>
+            <td colSpan="20" className="text-center">
+              <div className="spinner-border my-3" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  );
+}
