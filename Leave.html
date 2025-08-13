@@ -1,0 +1,101 @@
+function Leave() {
+  const [leaves, setLeaves] = React.useState(null);
+  const [leaveApplicationIsVisible, setLeaveApplicationIsVisible] = React.useState(false);
+  const [leaveBalance, setLeaveBalance] = React.useState(null);
+
+  React.useEffect(()=>{
+    fetchLeaveData();
+  },[]);
+
+  const fetchLeaveData = () => {
+    google.script.run.withSuccessHandler((response)=>{
+      setLeaves(response.data);
+    }).getLeaves();
+
+    google.script.run.withSuccessHandler((response)=>{
+      setLeaveBalance(response.data[0]);
+    }).getLeaveBalance();
+  }
+
+  const openLeaveApplication = () => {
+    setLeaveApplicationIsVisible(true);
+  }
+
+  const closeLeaveApplication = (refreshAppliedLeaves) => {
+    if(refreshAppliedLeaves){
+      fetchLeaveData();
+    }
+    setLeaveApplicationIsVisible(false);
+  }
+
+  return (
+  <div className="mt-3">
+    <h3>Leave Balance</h3>
+    <div>
+      <div className="col card leave-balance shadow-sm bg-warning text-white">
+        <div className="card-body">
+          <h5 className="card-title">Total Leave</h5>
+          {leaveBalance && <div className="digit">{parseInt(leaveBalance["EL"])+parseInt(leaveBalance["CL/SL"])}</div>}
+          {!leaveBalance && <div className="spinner-border spinner-border-sm my-3" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>}
+        </div>
+      </div>
+      <div className="col card leave-balance shadow-sm bg-info text-white">
+        <div className="card-body">
+          <h5 className="card-title">Earned Leave</h5>
+          {leaveBalance && <div className="digit">{leaveBalance["EL"]}</div>}
+          {!leaveBalance && <div className="spinner-border spinner-border-sm my-3" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>}
+        </div>
+      </div>
+      <div className="col card leave-balance shadow-sm bg-secondary text-white">
+        <div className="card-body">
+          <h5 className="card-title">Casual/Sick Leave</h5>
+          {leaveBalance && <div className="digit">{leaveBalance["CL/SL"]}</div>}
+          {!leaveBalance && <div className="spinner-border spinner-border-sm my-3" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>}
+        </div>
+      </div>
+    </div>
+
+    <div className="text-end mb-4">
+      <button className="btn btn-primary" onClick={openLeaveApplication}>Apply For Leave</button>
+    </div>
+    <table className="table">
+      <thead>
+        <tr>
+          <th>Date Applied</th>
+          <th>From Date</th>
+          <th>To Date</th>
+          <th>Reason</th>
+          <th>Leave Type</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {leaves && leaves.map((item, index)=><tr key={index}>
+          <td scope="row">{item["Date Applied"]}</td>
+          <td>{item["From Date"]}</td>
+          <td>{item["To Date"]}</td>
+          <td>{item["Leave Reason"]}</td>
+          <td>{item["Leave Type"]}</td>
+          <td>{item["Status"] ? item["Status"] : "Pending"}</td>
+        </tr>)}
+        {!leaves && 
+          <tr>
+            <td colSpan="20" className="text-center">
+              <div className="spinner-border my-3" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <LeaveApplication leaveApplicationIsVisible={leaveApplicationIsVisible} closeLeaveApplication={closeLeaveApplication} />
+  </div>
+  );
+}
