@@ -1,0 +1,45 @@
+function Assets() {
+  const [assets, setAssets] = React.useState(null);
+
+  React.useEffect(()=>{
+    google.script.run.withSuccessHandler((response)=>{
+      setAssets(response.data);
+    }).getAssets();
+  },[]);
+  return (
+  <div className="mt-3">
+    <h3>Assets</h3>
+    <table className="table">
+      <thead>
+        <tr>
+          <th>Assigned On</th>
+          <th>Assigned Until</th>
+          <th>TTL ID</th>
+          <th>Parent TTL ID</th>
+          <th>Device Serial</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {assets && assets.map((item, index)=><tr key={index}>
+          <td scope="row">{item["Assigned On"]}</td>
+          <td>{item["Assigned Until"]}</td>
+          <td>{item["TTL ID"]}</td>
+          <td>{item["Parent TTL ID"]}</td>
+          <td>{item["Device Serial"]}</td>
+          <td>{item["Description"]}</td>
+        </tr>)}
+        {!assets && 
+          <tr>
+            <td colSpan="20" className="text-center">
+              <div className="spinner-border my-3" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  );
+}
