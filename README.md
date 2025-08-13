@@ -30,7 +30,7 @@ Make a copy of the payslip template to match your company branding and style:
 
 ## 4. Configure Payslip Storage Path
 
-In **`config.gs`**, set the variable `PAYSLIP_FOLDER_PATH` to the Google Drive folder path where all generated payslips should be stored.
+In **`config.gs`**, set the variable `PAYSLIP_FOLDER_PATH` to the Google Drive folder path **ID** where all generated payslips should be stored.
 
 ---
 
