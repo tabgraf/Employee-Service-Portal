@@ -1,0 +1,95 @@
+function Payroll() {
+  const [salaries, setSalaries] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const [loadingMonth, setLoadingMonth] = React.useState(false);
+
+  React.useEffect(()=>{
+    google.script.run.withSuccessHandler((response)=>{
+      console.log(response);
+      setSalaries(response.data.reverse());
+    }).getSalaries();
+  },[]);
+
+  const generatePayslip = (month) => {
+    setLoading(true);
+    setLoadingMonth(month);
+    google.script.run.withSuccessHandler((response)=>{
+      let tempSalaries = JSON.parse(JSON.stringify(salaries));
+      setLoading(false);
+      tempSalaries.find((item)=>item.Month == month)["Payslip File ID"] = response.data.pdfFileId;
+      setSalaries(tempSalaries);
+    }).generatePayslip(month);
+  }
+
+  /*const sendPayslipAsEmail = (month) => {
+    setLoading(true);
+    setLoadingMonth(month);
+    google.script.run.withSuccessHandler((response)=>{
+      window.eventBus.dispatch("snackbar", {
+        message: "Email sent successfully.",
+        duration: 2000,
+      });
+      setLoading(false);
+    }).sendPayslipToEmail(month);
+  }*/
+
+  const downloadPayslip = (fileId) => {
+    window.eventBus.dispatch("snackbar", {
+      message: "Download will start in a moment.",
+      duration: 2000,
+    });
+    window.location.assign(`https://drive.google.com/uc?id=${fileId}&export=download`);
+  }
+
+  return (
+  <div className="mt-3">
+    <h3>Payroll</h3>
+    <table className="table mt-3">
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Disbursed on</th>
+          <th>Payslip</th>
+        </tr>
+      </thead>
+      <tbody>
+        {salaries && salaries.map((item, index)=><tr key={index}>
+          <td>{item["Month"]}</td>
+          <td>{item["Disbursed On"]}</td>
+          <td>
+            {!item["Payslip File ID"] && <button type="button" disabled={loading} className="btn btn-secondary" onClick={()=>{generatePayslip(item["Month"])}}>
+              {loading && loadingMonth == item["Month"] && <div className="spinner-border spinner-border-sm me-2" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>}
+              <i className="fa-solid fa-file-pdf"></i> Generate Payslip
+            </button>}
+            {item["Payslip File ID"] && <React.Fragment><button onClick={()=>{downloadPayslip(item["Payslip File ID"])}} type="button" className="btn btn-success">
+              <i className="fa-solid fa-download"></i> Download
+            </button>
+
+            {/*
+            <button disabled={loading} onClick={()=>{sendPayslipAsEmail(item["Month"])}} type="button" className="btn btn-dark ms-3">
+              {loading && loadingMonth == item["Month"] && <div className="spinner-border spinner-border-sm me-2" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>}
+              <i className="fa-solid fa-envelope-open-text"></i> Send to My Email
+            </button>*/}
+            
+            </React.Fragment>}
+          </td>
+        </tr>)}
+
+        {!salaries && 
+          <tr>
+            <td colSpan="20" className="text-center">
+              <div className="spinner-border my-3" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  );
+}
